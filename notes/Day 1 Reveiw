@@ -1,0 +1,441 @@
+# R Day 1 Review (House Prices + dplyr)
+
+**Date:** 2026-07-16
+
+## Goal
+
+* Read CSV data
+* Explore data structure
+* Practice `dplyr`
+* Create new variables with `mutate()`
+* Use `if_else()` and `case_when()`
+* Understand summary statistics
+* Learn `log1p()`
+
+---
+
+# Overall Evaluation
+
+**Score: 95 / 100 (A)**
+
+The review covered almost every topic from Day 1 without major mistakes. Most code was written correctly from memory rather than copied, showing that the basic `dplyr` workflow has become familiar.
+
+Particularly good habits:
+
+* Checking intermediate results with `head()`
+* Comparing outputs using `identical()`
+* Using pipes (`|>`) consistently
+* Verifying variables with `table()` and `names()`
+
+The remaining mistakes were mostly R syntax issues rather than conceptual misunderstandings.
+
+---
+
+# Topic-by-topic Feedback
+
+## 1. Reading Data
+
+✅ Correct
+
+```r
+train <- read.csv(...)
+```
+
+Remember:
+
+* Windows paths should preferably use `/`.
+* The file path must always be enclosed in quotation marks.
+
+---
+
+## 2. Exploring Data
+
+✅ Excellent
+
+Used
+
+* `dim()`
+* `head()`
+* `str()`
+* `names()`
+* `class()`
+
+These are exactly the first functions that should be used after loading a dataset.
+
+---
+
+## 3. select()
+
+✅ Excellent
+
+Both styles were correctly used.
+
+```r
+select(train, ...)
+```
+
+and
+
+```r
+train |>
+    select(...)
+```
+
+Also verified using
+
+```r
+identical()
+```
+
+which is a good debugging habit.
+
+---
+
+## 4. filter()
+
+✅ Excellent
+
+Single-condition filtering
+
+```r
+SalePrice >= 200000
+```
+
+and multiple conditions
+
+```r
+SalePrice >= 200000,
+PoolArea > 0
+```
+
+were both correct.
+
+Good understanding that commas inside `filter()` mean logical AND.
+
+---
+
+## 5. `%in%`
+
+✅ Excellent
+
+Correctly recognized that
+
+```r
+OverallQual %in% c(8,9,10)
+```
+
+is equivalent to
+
+```r
+OverallQual == 8 |
+OverallQual == 9 |
+OverallQual == 10
+```
+
+This will be very useful later for feature engineering.
+
+---
+
+## 6. mutate()
+
+✅ Excellent
+
+Created
+
+```r
+SalePrice_10k
+```
+
+correctly.
+
+Also checked the result immediately.
+
+Good habit.
+
+---
+
+## 7. if_else()
+
+✅ Correct
+
+```r
+if_else(
+    SalePrice >= 200000,
+    "High",
+    "Low"
+)
+```
+
+Exactly as intended.
+
+---
+
+## 8. case_when()
+
+✅ Correct
+
+```r
+case_when(
+    SalePrice < 150000 ~ "Low",
+    SalePrice < 250000 ~ "Middle",
+    TRUE ~ "High"
+)
+```
+
+Correct understanding that conditions are evaluated from top to bottom.
+
+No need to explicitly write
+
+```r
+SalePrice >= 150000 &
+```
+
+because the previous condition has already excluded those rows.
+
+---
+
+## 9. Summary Statistics
+
+✅ Excellent
+
+Computed
+
+* summary
+* mean
+* median
+
+correctly.
+
+Also compared mean and median.
+
+Good statistical habit.
+
+---
+
+## 10. Missing Values
+
+⚠ Small syntax mistake
+
+Incorrect:
+
+```r
+mean(train$LotFrontage, NA=True)
+```
+
+Correct:
+
+```r
+mean(train$LotFrontage, na.rm = TRUE)
+```
+
+Important:
+
+* `NA` is a missing value.
+* `na.rm` means "remove missing values."
+
+This argument appears frequently in R.
+
+---
+
+## 11. Pipe Workflow
+
+✅ Excellent
+
+The following workflow was written correctly.
+
+```r
+select()
+
+↓
+
+filter()
+
+↓
+
+mutate()
+
+↓
+
+head()
+```
+
+This is the basic data analysis pipeline used in almost every project.
+
+---
+
+## 12. Error Analysis
+
+Excellent explanation.
+
+```r
+select(SalePrice, PoolArea)
+```
+
+removes
+
+```r
+OverallQual
+```
+
+Therefore
+
+```r
+filter(OverallQual >= 8)
+```
+
+cannot work afterward.
+
+This shows good understanding of how data flows through a pipe.
+
+---
+
+## 13. log1p()
+
+Excellent.
+
+Correctly confirmed
+
+```r
+log1p(x) = log(1 + x)
+```
+
+Also compared
+
+```r
+log(0)
+```
+
+and
+
+```r
+log1p(0)
+```
+
+which explains why `log1p()` is often preferred in machine learning.
+
+---
+
+# Minor Mistakes
+
+### 1.
+
+```r
+SalePrice_10k %in% names(train)
+```
+
+This causes an error because `SalePrice_10k` is interpreted as an object.
+
+Correct:
+
+```r
+"SalePrice_10k" %in% names(train)
+```
+
+or
+
+```r
+names(train_price)
+```
+
+---
+
+### 2.
+
+```r
+class(PriceGroup)
+```
+
+`PriceGroup` is not an independent object.
+
+Correct:
+
+```r
+class(train_grouped$PriceGroup)
+```
+
+---
+
+### 3.
+
+```r
+mean_price, median_price
+```
+
+R does not print two objects separated by commas.
+
+Use
+
+```r
+mean_price
+median_price
+```
+
+or
+
+```r
+c(mean_price, median_price)
+```
+
+---
+
+### 4.
+
+Remember
+
+```r
+na.rm = TRUE
+```
+
+not
+
+```r
+NA = True
+```
+
+This is one of the most common beginner mistakes.
+
+---
+
+# What I Learned
+
+* Read CSV files correctly.
+* Inspect a dataset before analysis.
+* Use `select()`, `filter()`, and `mutate()` with pipes.
+* Create categorical variables using `if_else()` and `case_when()`.
+* Compute summary statistics.
+* Handle missing values using `na.rm = TRUE`.
+* Apply log transformation with `log1p()`.
+* Understand how data flows through a pipe.
+
+---
+
+# Confidence Level
+
+| Topic              | Confidence |
+| ------------------ | ---------- |
+| read.csv()         | ★★★★★      |
+| Pipes              | ★★★★★      |
+| select()           | ★★★★★      |
+| filter()           | ★★★★★      |
+| mutate()           | ★★★★★      |
+| if_else()          | ★★★★★      |
+| case_when()        | ★★★★★      |
+| Summary statistics | ★★★★★      |
+| Missing values     | ★★★★☆      |
+| log1p()            | ★★★★★      |
+
+---
+
+# Next Step (Day 2)
+
+Move from data manipulation to data visualization.
+
+Topics:
+
+* `ggplot()`
+* `aes()`
+* `geom_bar()`
+* `geom_histogram()`
+* Titanic survival visualization
+
+The goal is to produce clean exploratory data analysis (EDA) plots that will later be useful in Kaggle projects.
