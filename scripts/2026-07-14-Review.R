@@ -198,3 +198,22 @@ review <- train|>
   ), LogSalePrice = log1p(SalePrice))
 
 head(review,10)
+
+#22. plot
+
+ggplot(train, aes(x=SalePrice))+
+  geom_histogram()
+
+
+ggplot(train, aes(x=SalePrice))+
+  geom_density()
+
+ggplot(train, aes(x = SalePrice)) +
+  geom_histogram(
+    aes(y = after_stat(density)),
+    bins = 30
+  ) +
+  geom_density()
+
+
+
